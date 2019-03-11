@@ -1,0 +1,2 @@
+# SudokuSolver
+Sudoku lahendaja
