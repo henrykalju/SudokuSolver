@@ -1,7 +1,5 @@
 console.log("Hey");
 
-console.log();
-
 button1 = document.getElementById("lahenda");
 button1.style = "width: 100px; height: 100px";
 button1.onclick = lahenda;
@@ -63,6 +61,17 @@ const evil = [[{value: 0}, {value: 6}, {value: 0}, {value: 4}, {value: 0}, {valu
    		[{value: 9}, {value: 2}, {value: 0}, {value: 0}, {value: 3}, {value: 0}, {value: 6}, {value: 0}, {value: 0}],
    		[{value: 0}, {value: 0}, {value: 5}, {value: 0}, {value: 0}, {value: 6}, {value: 0}, {value: 1}, {value: 0}]];
 
+const evil2 = [[{value: 0}, {value: 0}, {value: 0}, {value: 7}, {value: 0}, {value: 8}, {value: 0}, {value: 0}, {value: 0}],
+   		 [{value: 6}, {value: 0}, {value: 0}, {value: 3}, {value: 0}, {value: 0}, {value: 0}, {value: 1}, {value: 0}],
+   		 [{value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 9}, {value: 1}, {value: 5}, {value: 0}, {value: 0}],
+   		 [{value: 2}, {value: 0}, {value: 8}, {value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 5}, {value: 4}],
+   		 [{value: 0}, {value: 0}, {value: 5}, {value: 0}, {value: 0}, {value: 0}, {value: 3}, {value: 0}, {value: 0}],
+   		 [{value: 1}, {value: 7}, {value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 9}, {value: 0}, {value: 8}],
+   		 [{value: 0}, {value: 0}, {value: 2}, {value: 1}, {value: 6}, {value: 0}, {value: 0}, {value: 0}, {value: 0}],
+   		 [{value: 0}, {value: 5}, {value: 0}, {value: 0}, {value: 0}, {value: 3}, {value: 0}, {value: 0}, {value: 7}],
+   		 [{value: 0}, {value: 0}, {value: 0}, {value: 2}, {value: 0}, {value: 9}, {value: 0}, {value: 0}, {value: 0}]];
+
+
 var ruudustik = [[{value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}],
    			 [{value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}],
    			 [{value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}],
@@ -81,6 +90,8 @@ for (let i = 0; i < ruudustik.length; i++) {
 		ruudustik[i][j].possible1 = [false, false, false, false, false, false, false, false, false];
 		ruudustik[i][j].possible2 = [true, true, true, true, true, true, true, true, true];
 		ruudustik[i][j].possible3 = [false, false, false, false, false, false, false, false, false];
+		ruudustik[i][j].possible4 = [false, false, false, false, false, false, false, false, false];
+		ruudustik[i][j].possible5 = [false, false, false, false, false, false, false, false, false];
 
 		if (ruudustik[i][j].value != 0) {
 			ruudustik[i][j].possible1[ruudustik[i][j].value -1] = true;
@@ -225,6 +236,12 @@ function lahenda(){
 					ruudustik[a][kohad[0]].possible2[b] = true;
 					ruudustik[a][kohad[0]].value = b+1;
 					draw();
+				} else if(numbreid < 4 && numbreid > 1) {
+					if (kohad.length == 2 && inSameSquare(a, b, kohad[0], kohad[1])) {
+						removeFromSquare(a, b, "rida", kohad[0], kohad[1]);
+					} else if (kohad.length == 3 && inSameSquare(a, b, kohad[0], kohad[1], kohad[2])) {
+						removeFromSquare(a, b, "rida", kohad[0], kohad[1], kohad[2]);
+					};
 				};
 			};
 			let samad = [[], [], [], [], [], [], [], [], []];
@@ -289,6 +306,13 @@ function lahenda(){
 					ruudustik[kohad[0]][a].possible2[b] = true;
 					ruudustik[kohad[0]][a].value = b+1;
 					draw();			
+
+				} else if(numbreid < 4 && numbreid > 1) {
+					if (kohad.length == 2 && inSameSquare(a, b, kohad[0], kohad[1])) {
+						removeFromSquare(a, b, "tulp", kohad[0], kohad[1]);
+					} else if (kohad.length == 3 && inSameSquare(a, b, kohad[0], kohad[1], kohad[2])) {
+						removeFromSquare(a, b, "tulp", kohad[0], kohad[1], kohad[2]);
+					};
 				};
 			};
 
@@ -449,6 +473,12 @@ function voimalik(rida, tulp, nr){
 				checkSame(rida, tulp, i, j)) {
 				return false;
 			};
+			if(ruudustik[(rida-rida%3)+i][(tulp-tulp%3)+j].possible4[nr] && i != rida%3) {
+				return false;
+			};
+			if(ruudustik[(rida-rida%3)+i][(tulp-tulp%3)+j].possible5[nr] && j != tulp%3) {
+				return false;
+			};
 		};
 	};
 
@@ -460,6 +490,7 @@ function tyhjenda(){
 		for (let j = 0; j < 9; j++){
 			ruudustik[i][j].activated = false;
 			ruudustik[i][j].value = 0;
+			ruudustik[i][j].algne = false;
 			ruudustik[i][j].possible1 = [false, false, false, false, false, false, false, false, false];
 			ruudustik[i][j].possible2 = [true, true, true, true, true, true, true, true, true];
 		};
@@ -469,33 +500,73 @@ function tyhjenda(){
 
 function vali(){
 	let valik = document.getElementById("valik").options.selectedIndex;
-	if(valik == 0) {
-		ruudustik = easy;
-	} else if(valik == 1) {
-		ruudustik = medium;
-	} else if(valik == 2) {
-		ruudustik = hard;
-	} else if(valik == 3) {
-		ruudustik = evil;
-	} else {
-		console.log("Not available");
-	};
-
-	for (let i = 0; i < ruudustik.length; i++) {
-		for (let j = 0; j < 9; j++) {
-		
+	// tehtud nii, sest nt ruudustik = easy objektid jäävad samaks ning muudab ka easy konstandi sisu
+	for(let i = 0; i < 9; i++){
+		for(let j = 0; j < 9; j++) {
+			if(valik == 0) {
+				ruudustik[i][j].value = easy[i][j].value;
+			} else if(valik == 1) {
+				ruudustik[i][j].value = medium[i][j].value;
+			} else if(valik == 2) {
+				ruudustik[i][j].value = hard[i][j].value;
+			} else if(valik == 3) {
+				ruudustik[i][j].value = evil[i][j].value;
+			} else {
+				ruudustik[i][j].value = evil2[i][j].value;
+			};
+			
 			ruudustik[i][j].possible1 = [false, false, false, false, false, false, false, false, false];
 			ruudustik[i][j].possible2 = [true, true, true, true, true, true, true, true, true];
 			ruudustik[i][j].possible3 = [false, false, false, false, false, false, false, false, false];
+			ruudustik[i][j].possible4 = [false, false, false, false, false, false, false, false, false];
+			ruudustik[i][j].possible5 = [false, false, false, false, false, false, false, false, false];
 
 			if (ruudustik[i][j].value != 0) {
 				ruudustik[i][j].possible1[ruudustik[i][j].value -1] = true;
 				ruudustik[i][j].possible2[ruudustik[i][j].value -1] = true;
 				ruudustik[i][j].algne = true;
+			} else {
+				ruudustik[i][j].algne = false;
 			};
 		};
 	};
 	draw();
+};
+
+function inSameSquare(rida, nr, koht1, koht2, koht3 = 0) {
+	if (koht3) {
+		if(koht1 - koht1%3 == koht2 - koht2%3 && koht2 - koht2%3 == koht3 - koht3%3) {
+			return true;
+		};
+	} else {
+		if(koht1 - koht1%3 == koht2 - koht2%3) {
+			return true;
+		};
+	};
+};
+
+function removeFromSquare(rida, nr, kumb, tulp1, tulp2, tulp3 = 0) {
+	for (let i = 0; i < 3; i++) {
+		for(let j = 0; j < 3; j++) {
+			if (tulp3 && kumb == "rida") {
+				if(rida - rida%3 + i == rida && (tulp1 - tulp1%3 + j == tulp1 || tulp2 - tulp2%3 + j == tulp2 || tulp3 - tulp3%3 + j == tulp3)) {
+					ruudustik[rida - rida%3 + i][tulp1 - tulp1%3 + j].possible4[nr] = true;
+				}
+			} else if(kumb == "rida") {
+				if(rida - rida%3 + i == rida && (tulp1 - tulp1%3 + j == tulp1 || tulp2 - tulp2%3 + j == tulp2)) {
+					ruudustik[rida - rida%3 + i][tulp1 - tulp1%3 + j].possible4[nr] = true;
+				};
+			} else if(tulp3 && kumb == "tulp") {
+				if(rida - rida%3 + i == rida && (tulp1 - tulp1%3 + j == tulp1 || tulp2 - tulp2%3 + j == tulp2 || tulp3 - tulp3%3 + j == tulp3)) {
+					ruudustik[tulp1 - tulp1%3 + j][rida - rida%3 + i].possible5[nr] = true;
+				}
+			} else if(kumb == "tulp") {
+				if(rida - rida%3 + i == rida && (tulp1 - tulp1%3 + j == tulp1 || tulp2 - tulp2%3 + j == tulp2)) {
+					ruudustik[tulp1 - tulp1%3 + j][rida - rida%3 + i].possible5[nr] = true;
+				};
+			};
+		};
+	};
 };
 
 function checkPossible(a = [], b = []){
