@@ -92,6 +92,8 @@ for (let i = 0; i < ruudustik.length; i++) {
 		ruudustik[i][j].possible3 = [false, false, false, false, false, false, false, false, false];
 		ruudustik[i][j].possible4 = [false, false, false, false, false, false, false, false, false];
 		ruudustik[i][j].possible5 = [false, false, false, false, false, false, false, false, false];
+		ruudustik[i][j].possible6 = [false, false, false, false, false, false, false, false, false];
+		ruudustik[i][j].possible7 = [false, false, false, false, false, false, false, false, false];
 
 		if (ruudustik[i][j].value != 0) {
 			ruudustik[i][j].possible1[ruudustik[i][j].value -1] = true;
@@ -102,6 +104,9 @@ for (let i = 0; i < ruudustik.length; i++) {
 };
 draw();
 
+let viimanex = 0
+let viimaney = 0
+
 ctx.addEventListener("mouseup", function(event){
 	x = Math.min(8, Math.max(0, (event.clientX - 8 - (event.clientX - 8)%size)/size));
 	y = Math.min(8, Math.max(0, (event.clientY - 8 - (event.clientY - 8)%size)/size));
@@ -109,7 +114,7 @@ ctx.addEventListener("mouseup", function(event){
 	for (let i = 0; i < ruudustik.length; i++){
 		for (let j = 0; j < ruudustik[0].length; j++){
 			if ((j != y || i != x) && ruudustik[j][i].activated){
-				ruudustik[j][i].activated = false;					
+				ruudustik[j][i].activated = false;
 			};
 		};
 	};
@@ -118,14 +123,35 @@ ctx.addEventListener("mouseup", function(event){
 		ruudustik[y][x].activated = false;
 	}else {
 		ruudustik[y][x].activated = true;
+		viimanex = x
+		viimaney = y
 	};
 	draw();
 });
 
 document.addEventListener("keydown", function(event){
 	keypressed = event.keyCode;
-	//console.log(keypressed)
+	//console.log(keypressed);
 	
+	
+	if (keypressed == 37/*vasak*/ && viimanex != 0){
+		ruudustik[viimaney][viimanex].activated = false;
+		viimanex--;
+		ruudustik[viimaney][viimanex].activated = true;
+	} else if(keypressed == 38/*ülemine*/ && viimaney != 0){
+		ruudustik[viimaney][viimanex].activated = false;
+		viimaney--;
+		ruudustik[viimaney][viimanex].activated = true;
+	} else if(keypressed == 39/*parem*/ && viimanex != 8){
+		ruudustik[viimaney][viimanex].activated = false;
+		viimanex++;
+		ruudustik[viimaney][viimanex].activated = true;
+	} else if(keypressed == 40/*alumine*/ && viimaney != 8){
+		ruudustik[viimaney][viimanex].activated = false;
+		viimaney++;
+		ruudustik[viimaney][viimanex].activated = true;
+	};
+
 	for (let i = 0; i < ruudustik.length; i++){
 		for (let j = 0; j < ruudustik[0].length; j++){
 			if (ruudustik[j][i].activated){
@@ -136,7 +162,11 @@ document.addEventListener("keydown", function(event){
                     ruudustik[j][i].value = keypressed - 48;
 					ruudustik[j][i].activated = false;
                 };
-                ruudustik[j][i].algne = true;
+                if (ruudustik[j][i].value == 0) {
+                	ruudustik[j][i].algne = false;
+                } else {
+                	ruudustik[j][i].algne = true;
+                }
             };
 		};
 	};
@@ -384,6 +414,14 @@ function lahenda(){
 					ruudustik[rida + kohad[0]][tulp + kohad[1]].possible2[z] = true;
 					ruudustik[rida + kohad[0]][tulp + kohad[1]].value = z + 1;
 					draw();
+				} else if (numbreid > 1 && numbreid < 4) {
+					if(kohad.length == 4) {
+						removeFromRow(z, rida, tulp, kohad[0], kohad[1], inSameRow(kohad[0], kohad[1], 
+							kohad[2], kohad[3]), kohad[2], kohad[3]);
+					} else if(kohad.length == 6) {
+						removeFromRow(z, rida, tulp, kohad[0], kohad[1], inSameRow(kohad[0], kohad[1], 
+							kohad[2], kohad[3], kohad[4], kohad[5]), kohad[2], kohad[3], kohad[4], kohad[5]);
+					};
 				};
 			};
 		};
@@ -453,13 +491,13 @@ function voimalik(rida, tulp, nr){
 	};
 
 	for(let i = 0; i < 9; i++) {
-		if(ruudustik[rida][i].value == nr+1) {
+		if(ruudustik[rida][i].value == nr+1 || (ruudustik[rida][i].possible6[nr] = true && ruudustik[rida][tulp].possible6 == false)) {
 			return false;
 		};
 	};
 
 	for(let i = 0; i < 9; i++) {
-		if(ruudustik[i][tulp].value == nr+1) {
+		if(ruudustik[i][tulp].value == nr+1 || (ruudustik[i][tulp].possible7[nr] = true && ruudustik[rida][tulp].possible7 == false)) {
 			return false;
 		};
 	};
@@ -493,6 +531,11 @@ function tyhjenda(){
 			ruudustik[i][j].algne = false;
 			ruudustik[i][j].possible1 = [false, false, false, false, false, false, false, false, false];
 			ruudustik[i][j].possible2 = [true, true, true, true, true, true, true, true, true];
+			ruudustik[i][j].possible3 = [false, false, false, false, false, false, false, false, false];
+			ruudustik[i][j].possible4 = [false, false, false, false, false, false, false, false, false];
+			ruudustik[i][j].possible5 = [false, false, false, false, false, false, false, false, false];
+			ruudustik[i][j].possible6 = [false, false, false, false, false, false, false, false, false];
+			ruudustik[i][j].possible7 = [false, false, false, false, false, false, false, false, false];
 		};
 	};
 	draw();
@@ -520,6 +563,8 @@ function vali(){
 			ruudustik[i][j].possible3 = [false, false, false, false, false, false, false, false, false];
 			ruudustik[i][j].possible4 = [false, false, false, false, false, false, false, false, false];
 			ruudustik[i][j].possible5 = [false, false, false, false, false, false, false, false, false];
+			ruudustik[i][j].possible6 = [false, false, false, false, false, false, false, false, false];
+			ruudustik[i][j].possible7 = [false, false, false, false, false, false, false, false, false];
 
 			if (ruudustik[i][j].value != 0) {
 				ruudustik[i][j].possible1[ruudustik[i][j].value -1] = true;
@@ -596,4 +641,48 @@ function checkSame(rida, tulp, i, j) {
 		};
 	};
 	return true;
+};
+
+function inSameRow(y1, x1, y2, x2, y3 = 0, x3 = 0) {
+	if(y3) {
+		if (y1 == y2 && y2 == y3){
+			return "tulp";
+		} else if (x1 == x2 && x2 == x3) {
+			return "rida";
+		} else {
+			return false;
+		};
+	} else {
+		if (y1 == y2){
+			return "tulp";
+		} else if (x1 == x2) {
+			return "rida";
+		} else {
+			return false;
+		};
+	};
+};
+
+function removeFromRow(nr, rida, tulp, x1, y1, kumb, x2, y2, x3 = 0, y3 = 0) {
+	if(kumb == "rida") {
+		if(x3){
+			ruudustik[rida + x1][tulp + y1].possible6[nr] = true;
+			ruudustik[rida + x2][tulp + y2].possible6[nr] = true;
+			ruudustik[rida + x3][tulp + y3].possible6[nr] = true;
+		} else {
+			ruudustik[rida + x1][tulp + y1].possible6[nr] = true;
+			ruudustik[rida + x2][tulp + y2].possible6[nr] = true;
+		}
+	} else if (kumb == "tulp") {
+		if(x3){
+			ruudustik[rida + x1][tulp + y1].possible7[nr] = true;
+			ruudustik[rida + x2][tulp + y2].possible7[nr] = true;
+			ruudustik[rida + x3][tulp + y3].possible7[nr] = true;
+		} else {
+			ruudustik[rida + x1][tulp + y1].possible7[nr] = true;
+			ruudustik[rida + x2][tulp + y2].possible7[nr] = true;
+		}
+	} else {
+		return false;
+	};
 };
