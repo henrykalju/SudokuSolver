@@ -1,5 +1,7 @@
 console.log("Hey");
 
+var mitukorda = 0;
+
 button1 = document.getElementById("lahenda");
 button1.style = "width: 100px; height: 100px";
 button1.onclick = lahenda;
@@ -70,7 +72,6 @@ const evil2 = [[{value: 0}, {value: 0}, {value: 0}, {value: 7}, {value: 0}, {val
    		 [{value: 0}, {value: 0}, {value: 2}, {value: 1}, {value: 6}, {value: 0}, {value: 0}, {value: 0}, {value: 0}],
    		 [{value: 0}, {value: 5}, {value: 0}, {value: 0}, {value: 0}, {value: 3}, {value: 0}, {value: 0}, {value: 7}],
    		 [{value: 0}, {value: 0}, {value: 0}, {value: 2}, {value: 0}, {value: 9}, {value: 0}, {value: 0}, {value: 0}]];
-
 
 var ruudustik = [[{value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}],
    			 [{value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}, {value: 0}],
@@ -158,15 +159,20 @@ document.addEventListener("keydown", function(event){
 				if (keypressed <= 105 && keypressed >= 96) {
                     ruudustik[j][i].activated = false;
                     ruudustik[j][i].value = keypressed - 96;
+                    if (ruudustik[j][i].value != 0) {
+                    	ruudustik[j][i].algne = true;
+                	} else {
+                		ruudustik[j][i].algne = false;
+                	};
                 }else if (keypressed <= 57 && keypressed >= 48){
                     ruudustik[j][i].value = keypressed - 48;
 					ruudustik[j][i].activated = false;
+					if (ruudustik[j][i].value != 0) {
+                    	ruudustik[j][i].algne = true;
+                	} else {
+                		ruudustik[j][i].algne = false;
+                	};
                 };
-                if (ruudustik[j][i].value == 0) {
-                	ruudustik[j][i].algne = false;
-                } else {
-                	ruudustik[j][i].algne = true;
-                }
             };
 		};
 	};
@@ -225,8 +231,8 @@ var paarid = [];
 function lahenda(){
 	var start = new Date().getTime();
 	console.log("No hakkame ss lahendama!");
-
-	lahendatud = false;
+	var lahendatud = false;
+	var eisaa = false;
 	var korrad = 0;
 
 	while (!lahendatud && korrad < 15){
@@ -244,6 +250,7 @@ function lahenda(){
             lahendatud = true;
             break;
         } else if(valmis < 17) {
+        	eisaa = true;
         	break;
         };
 
@@ -262,6 +269,7 @@ function lahenda(){
 					};
 				};
 				if(numbreid == 1) {
+					ruudustik[a][kohad[0]].possible1 = [false, false, false, false, false, false, false, false, false];
 					ruudustik[a][kohad[0]].possible1[b] = true;
 					ruudustik[a][kohad[0]].possible2[b] = true;
 					ruudustik[a][kohad[0]].value = b+1;
@@ -332,6 +340,7 @@ function lahenda(){
 					};
 				};
 				if(numbreid == 1) {
+					ruudustik[kohad[0]][a].possible1 = [false, false, false, false, false, false, false, false, false];
 					ruudustik[kohad[0]][a].possible1[b] = true;
 					ruudustik[kohad[0]][a].possible2[b] = true;
 					ruudustik[kohad[0]][a].value = b+1;
@@ -359,7 +368,7 @@ function lahenda(){
 						if (sama) {
 							let midagi = 0;
 							for(let o = 0; o < 9; o++){
-								if(ruudustik[i][a].possible1[o] == true) {
+								if(ruudustik[i][a].possible1[o]) {
 									midagi++;
 								};
 							};
@@ -410,6 +419,7 @@ function lahenda(){
 				};
 
 				if (numbreid == 1){
+					ruudustik[rida + kohad[0]][tulp + kohad[1]].possible1 = [false, false, false, false, false, false, false, false, false];
 					ruudustik[rida + kohad[0]][tulp + kohad[1]].possible1[z] = true;
 					ruudustik[rida + kohad[0]][tulp + kohad[1]].possible2[z] = true;
 					ruudustik[rida + kohad[0]][tulp + kohad[1]].value = z + 1;
@@ -473,8 +483,15 @@ function lahenda(){
 	if (lahendatud){
 		console.log("Ja ongi lahendatud!!!");
 		console.log("Aega kulus: ", end - start, " ms");
-	} else {
+	} else if(eisaa) {
 		console.log("ERROR 4004 KEEGI TEGI MIDAGI VALESTI");
+	} else {
+		//Brute Force
+		if (mitukorda < 60) {
+			bruteForce();
+			mitukorda++;
+			lahenda()
+		};
 	};
 };
 
@@ -501,14 +518,13 @@ function voimalik(rida, tulp, nr){
 			return false;
 		};
 	};
-
 	for (let i = 0; i < 3; i++) {
 		for (let j = 0; j < 3; j++) {
 			if (ruudustik[(rida-rida%3)+i][(tulp-tulp%3)+j].value == nr+1){
 				return false;
 			};
 			if(ruudustik[(rida-rida%3)+i][(tulp-tulp%3)+j].possible3[nr] && (i != rida%3 || j != tulp%3) && 
-				checkSame(rida, tulp, i, j)) {
+				!ruudustik[rida][tulp].possible3[nr]) {
 				return false;
 			};
 			if(ruudustik[(rida-rida%3)+i][(tulp-tulp%3)+j].possible4[nr] && i != rida%3) {
@@ -524,6 +540,7 @@ function voimalik(rida, tulp, nr){
 };
 
 function tyhjenda(){
+	brute_list = [];
 	for (let i = 0; i < 9; i++){
 		for (let j = 0; j < 9; j++){
 			ruudustik[i][j].activated = false;
@@ -536,12 +553,14 @@ function tyhjenda(){
 			ruudustik[i][j].possible5 = [false, false, false, false, false, false, false, false, false];
 			ruudustik[i][j].possible6 = [false, false, false, false, false, false, false, false, false];
 			ruudustik[i][j].possible7 = [false, false, false, false, false, false, false, false, false];
+			mitukorda = 0;
 		};
 	};
 	draw();
 };
 
 function vali(){
+	brute_list = [];
 	let valik = document.getElementById("valik").options.selectedIndex;
 	// tehtud nii, sest nt ruudustik = easy objektid jäävad samaks ning muudab ka easy konstandi sisu
 	for(let i = 0; i < 9; i++){
@@ -565,6 +584,7 @@ function vali(){
 			ruudustik[i][j].possible5 = [false, false, false, false, false, false, false, false, false];
 			ruudustik[i][j].possible6 = [false, false, false, false, false, false, false, false, false];
 			ruudustik[i][j].possible7 = [false, false, false, false, false, false, false, false, false];
+			mitukorda = 0;
 
 			if (ruudustik[i][j].value != 0) {
 				ruudustik[i][j].possible1[ruudustik[i][j].value -1] = true;
@@ -596,18 +616,23 @@ function removeFromSquare(rida, nr, kumb, tulp1, tulp2, tulp3 = 0) {
 			if (tulp3 && kumb == "rida") {
 				if(rida - rida%3 + i == rida && (tulp1 - tulp1%3 + j == tulp1 || tulp2 - tulp2%3 + j == tulp2 || tulp3 - tulp3%3 + j == tulp3)) {
 					ruudustik[rida - rida%3 + i][tulp1 - tulp1%3 + j].possible4[nr] = true;
+					ruudustik[rida - rida%3 + i][tulp1 - tulp1%3 + j].possible1[nr] = true;
 				}
 			} else if(kumb == "rida") {
 				if(rida - rida%3 + i == rida && (tulp1 - tulp1%3 + j == tulp1 || tulp2 - tulp2%3 + j == tulp2)) {
 					ruudustik[rida - rida%3 + i][tulp1 - tulp1%3 + j].possible4[nr] = true;
+					ruudustik[rida - rida%3 + i][tulp1 - tulp1%3 + j].possible1[nr] = true;
+
 				};
 			} else if(tulp3 && kumb == "tulp") {
 				if(rida - rida%3 + i == rida && (tulp1 - tulp1%3 + j == tulp1 || tulp2 - tulp2%3 + j == tulp2 || tulp3 - tulp3%3 + j == tulp3)) {
 					ruudustik[tulp1 - tulp1%3 + j][rida - rida%3 + i].possible5[nr] = true;
+					ruudustik[tulp1 - tulp1%3 + j][rida - rida%3 + i].possible1[nr] = true;
 				}
 			} else if(kumb == "tulp") {
 				if(rida - rida%3 + i == rida && (tulp1 - tulp1%3 + j == tulp1 || tulp2 - tulp2%3 + j == tulp2)) {
 					ruudustik[tulp1 - tulp1%3 + j][rida - rida%3 + i].possible5[nr] = true;
+					ruudustik[tulp1 - tulp1%3 + j][rida - rida%3 + i].possible1[nr] = true;
 				};
 			};
 		};
@@ -628,19 +653,6 @@ function checkPossible(a = [], b = []){
 	} else {
 		return false;
 	};
-};
-
-function checkSame(rida, tulp, i, j) {
-	for(let paar = 0; paar < paarid.length; paar++) {
-		if(rida == paarid[paar][0] && tulp == paarid[paar][1]) {
-			let paarilinex = paarid[paar][2]%3;
-			let paariliney = paarid[paar][3]%3;
-			if (i == paarilinex && j == paariliney){
-				return false;
-			};
-		};
-	};
-	return true;
 };
 
 function inSameRow(y1, x1, y2, x2, y3 = 0, x3 = 0) {
@@ -685,4 +697,77 @@ function removeFromRow(nr, rida, tulp, x1, y1, kumb, x2, y2, x3 = 0, y3 = 0) {
 	} else {
 		return false;
 	};
+};
+
+var brute_list = [];
+algneState =  [[{}, {}, {}, {}, {}, {}, {}, {}, {}],
+   			 [{}, {}, {}, {}, {}, {}, {}, {}, {}],
+   			 [{}, {}, {}, {}, {}, {}, {}, {}, {}],
+   			 [{}, {}, {}, {}, {}, {}, {}, {}, {}],
+   			 [{}, {}, {}, {}, {}, {}, {}, {}, {}],
+   			 [{}, {}, {}, {}, {}, {}, {}, {}, {}],
+   			 [{}, {}, {}, {}, {}, {}, {}, {}, {}],
+   			 [{}, {}, {}, {}, {}, {}, {}, {}, {}],
+   			 [{}, {}, {}, {}, {}, {}, {}, {}, {}]];
+
+function bruteForce() {
+	if (!brute_list[0]) {
+		changeRuudustik("ruudustik-algneState")
+	}
+	let viimane = brute_list.length-1;
+	if (!brute_list[0] || brute_list[viimane][3] == 2) {
+		// PANE SIIA RUUDUSTIK CHANGE VMS
+		changeRuudustik("algneState-ruudustik")
+		for (let r = 0; r < 9; r++) {
+			for (let t = 0; t < 9; t++) {
+				if (!algneState[r][t].bruted && ruudustik[r][t].value == 0) {
+					let sobivad = [];
+					for(let nrd = 0; nrd < 9; nrd++) {
+						if (ruudustik[r][t].possible1[nrd]) {
+							sobivad.push(nrd);
+						};
+					};
+					if (sobivad.length == 2) {
+//						console.log(r, t, sobivad)
+						brute_list.push([r, t, sobivad, 1]);
+						ruudustik[r][t].value = sobivad[0]+1;
+						return;
+					};
+				};
+			};
+		};
+	} else {
+		changeRuudustik("algneState-ruudustik")
+		// SIIA RUUDUSTIK CHANGE VMS
+		ruudustik[brute_list[viimane][0]][brute_list[viimane][1]].value = brute_list[viimane][2][1]+1;
+		algneState[brute_list[viimane][0]][brute_list[viimane][1]].bruted = true;
+
+		brute_list[viimane][3] = 2;
+		return;
+	};
+};
+
+function changeRuudustik(algne) {
+   	for (let i = 0; i < 9; i++) {
+   		for (let j = 0; j < 9; j++) {
+			if (algne == "algneState-ruudustik") {
+	   			ruudustik[i][j]["value"] = algneState[i][j]["value"];
+				ruudustik[i][j].possible1 = algneState[i][j].possible1;
+				ruudustik[i][j].possible2 = algneState[i][j].possible2;
+				ruudustik[i][j].possible3 = algneState[i][j].possible3;
+				ruudustik[i][j].possible4 = algneState[i][j].possible4;
+				ruudustik[i][j].possible5 = algneState[i][j].possible5;
+				ruudustik[i][j].possible6 = algneState[i][j].possible6;
+				ruudustik[i][j].possible7 = algneState[i][j].possible7;
+			} else if(algne == "ruudustik-algneState")
+				algneState[i][j]["value"] = ruudustik[i][j]["value"];
+				algneState[i][j].possible1 = ruudustik[i][j].possible1;
+				algneState[i][j].possible2 = ruudustik[i][j].possible2;
+				algneState[i][j].possible3 = ruudustik[i][j].possible3;
+				algneState[i][j].possible4 = ruudustik[i][j].possible4;
+				algneState[i][j].possible5 = ruudustik[i][j].possible5;
+				algneState[i][j].possible6 = ruudustik[i][j].possible6;
+				algneState[i][j].possible7 = ruudustik[i][j].possible7;
+   		};
+   	};
 };
