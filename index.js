@@ -235,7 +235,7 @@ function lahenda(){
 	var eisaa = false;
 	var korrad = 0;
 
-	while (!lahendatud && korrad < 15){
+	while (!lahendatud && korrad < 30){
 		let valmis = 0;
 
 		for(let i = 0; i < 9; i++) {
@@ -759,7 +759,7 @@ function changeRuudustik(algne) {
 				ruudustik[i][j].possible5 = algneState[i][j].possible5;
 				ruudustik[i][j].possible6 = algneState[i][j].possible6;
 				ruudustik[i][j].possible7 = algneState[i][j].possible7;
-			} else if(algne == "ruudustik-algneState")
+			} else if(algne == "ruudustik-algneState") {
 				algneState[i][j]["value"] = ruudustik[i][j]["value"];
 				algneState[i][j].possible1 = ruudustik[i][j].possible1;
 				algneState[i][j].possible2 = ruudustik[i][j].possible2;
@@ -768,6 +768,7 @@ function changeRuudustik(algne) {
 				algneState[i][j].possible5 = ruudustik[i][j].possible5;
 				algneState[i][j].possible6 = ruudustik[i][j].possible6;
 				algneState[i][j].possible7 = ruudustik[i][j].possible7;
+			};
    		};
    	};
 };
