@@ -14,6 +14,9 @@ buttonVali = document.getElementById("vali");
 buttonVali.style = "width: 100px; height: 100px;";
 buttonVali.onclick = vali;
 
+valiOptions = document.getElementById("valik");
+valiOptions.style = "widht: 100px; height: 25px;";
+
 ctx = document.getElementById("canvas");
 canvas = ctx.getContext("2d");
 
@@ -561,7 +564,7 @@ function tyhjenda(){
 
 function vali(){
 	brute_list = [];
-	let valik = document.getElementById("valik").options.selectedIndex;
+	let valik = valiOptions.options.selectedIndex;
 	// tehtud nii, sest nt ruudustik = easy objektid jäävad samaks ning muudab ka easy konstandi sisu
 	for(let i = 0; i < 9; i++){
 		for(let j = 0; j < 9; j++) {
