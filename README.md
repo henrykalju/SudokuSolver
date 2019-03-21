@@ -1,11 +1,19 @@
 # SudokuSolver
 Sudoku lahendaja
-Lahendab mitmeid sudokusi kergetest üpris rasketeni
 
-Saab sisestada oma sudokusi ja ka proovida mõningaid olemasolevatest.
+# Kuidas kasutada
+1) Lae programm alla (git clone)
+2) Ava index.html fail brauseris
+3) Sisesta enda sudoku või vali olemasolevatest
+4) Vajuta lahenda!
 
-Liikuda saab ruudustikus noolteklahvidega kui ka hiirega vajutades.
+# Olemasoleva valimine
+1) Dropdownist vali sudoku
+2) Vajuta vali nuppu
 
-Lahenduse lõpus prindib konsooli aja, mis võttis.
+# Enda sudoku sisestamine
+1) Vajuta ruudule hiirega ning vajuta numbriklahvi
+2) Saad kasutada ka nooli ruudustikus liikumiseks
 
-Tühjenda nupuga puhastab ruudustiku.
+# Tühjenda nupp
+ Tühjenda nuppu vajutades läheb ruudustik tühjaks
