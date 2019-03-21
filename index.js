@@ -486,6 +486,7 @@ function lahenda(){
 	if (lahendatud){
 		console.log("Ja ongi lahendatud!!!");
 		console.log("Aega kulus: ", end - start, " ms");
+		document.getElementById("time").innerHTML = "Aega kulus: " + String(end - start) + " ms";
 	} else if(eisaa) {
 		console.log("ERROR 4004 KEEGI TEGI MIDAGI VALESTI");
 	} else {
