@@ -17,3 +17,5 @@ Sudoku lahendaja
 
 # Tühjenda nupp
  Tühjenda nuppu vajutades läheb ruudustik tühjaks
+
+hehe
